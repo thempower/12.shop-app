@@ -1,52 +1,44 @@
+import { useState, useMemo } from 'react';
 import styles from './Product.module.scss';
-import clsx from 'clsx';
-import Button from '../Button/Button';
+import ProductImage from '../ProductImage/ProductImage';
+import ProductOptions from '../ProductOptions/ProductOptions';
 import PropTypes from 'prop-types';
 
-
-
 const Product = props => {
+
+  const [currentColor, setCurrentColor] = useState(props.colors[0]);
+  const [currentSize, setCurrentSize] = useState(props.sizes[0]);
+
+  const getTotalPrice = (basePrice, additionalPrice) => {
+    return basePrice + additionalPrice;
+  };
+
+  const totalPrice = useMemo( () => getTotalPrice(props.basePrice, currentSize.additionalPrice), [props.basePrice, currentSize],
+  );
+
   return (
     <article className={styles.product}>
-      <div className={styles.imageContainer}>
-        <img
-          className={styles.image}
-          alt="Kodilla shirt"
-          src={`${process.env.PUBLIC_URL}/images/products/shirt-kodilla--black.jpg`} />
-      </div>
-      <div>
-        <header>
-          <h2 className={styles.name}>{props.title}</h2>
-          <span className={styles.price}>{props.basePrice}</span>
-        </header>
-        <form>
-          <div className={styles.sizes}>
-            <h3 className={styles.optionLabel}>Sizes</h3>
-            <ul className={styles.choices}>
-              <li><button type="button" className={styles.active}>S</button></li>
-              <li><button type="button">M</button></li>
-              <li><button type="button">L</button></li>
-              <li><button type="button">XL</button></li>
-            </ul>
-          </div>
-          <div className={styles.colors}>
-            <h3 className={styles.optionLabel}>Colors</h3>
-            <ul className={styles.choices}>
-              <li><button type="button" className={clsx(styles.colorBlack, styles.active)} /></li>
-              <li><button type="button" className={clsx(styles.colorRed)} /></li>
-              <li><button type="button" className={clsx(styles.colorWhite)} /></li>
-            </ul>
-          </div>
-          <Button className={styles.button}>
-            <span className="fa fa-shopping-cart" />
-          </Button>
-        </form>
-      </div>
+      <ProductImage name={props.name}
+                    title={props.title}
+                    currentColor={currentColor} />          
+      <ProductOptions sizes={props.sizes}
+                    colors={props.colors}
+                    title={props.title}
+                    totalPrice={totalPrice}
+                    basePrice={props.basePrice}
+                    currentColor={currentColor}
+                    currentSize={currentSize}
+                    setCurrentColor={setCurrentColor}
+                    setCurrentSize={setCurrentSize} />
     </article>
   )
 };
+
 Product.propTypes = {
+  name: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
+  sizes: PropTypes.array.isRequired,
+  colors: PropTypes.array.isRequired,
   basePrice: PropTypes.number.isRequired,
 };
 
